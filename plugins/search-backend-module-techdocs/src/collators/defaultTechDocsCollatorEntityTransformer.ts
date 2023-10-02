@@ -15,7 +15,7 @@
  */
 
 import { Entity, isGroupEntity, isUserEntity } from '@backstage/catalog-model';
-import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
+import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
 
 const getDocumentText = (entity: Entity): string => {
   const documentTexts: string[] = [];
@@ -37,11 +37,13 @@ const getDocumentText = (entity: Entity): string => {
 };
 
 /** @public */
-export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer =
+export const defaultTechDocsCollatorEntityTransformer: TechDocsCollatorEntityTransformer =
   (entity: Entity) => {
-    console.log("Test");
+    console.log("test");
     return {
       title: entity.metadata.title ?? entity.metadata.name,
+      name: entity.metadata.title ?? entity.metadata.name,
+      path: '',
       text: getDocumentText(entity),
       componentType: entity.spec?.type?.toString() || 'other',
       type: entity.spec?.type?.toString() || 'other',

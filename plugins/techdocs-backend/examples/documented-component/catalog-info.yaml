@@ -6,6 +6,9 @@ metadata:
   description: A Service with TechDocs documentation
   annotations:
     backstage.io/techdocs-ref: dir:.
+  tags:
+    - hannes
+    - jetter
 spec:
   type: service
   lifecycle: experimental

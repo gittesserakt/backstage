@@ -118,6 +118,36 @@ const SearchPage = () => {
                 )}
                 <SearchFilter.Select
                   className={classes.filter}
+                  label="Tag"
+                  name="tags"
+                  values={async () => {
+                    // Return a list of tags which are documented.
+                    const { items } = await catalogApi.getEntities({
+                      fields: ['metadata.tags'],
+                      filter: {
+                        'metadata.tags':
+                          CATALOG_FILTER_EXISTS,
+                      },
+                    });
+
+                    const uniqueTags = new Set();
+                    
+                    items.forEach(item => {
+                      const tags = item.metadata?.tags;
+                      if (Array.isArray(tags)) {
+                        tags.forEach(tag => {
+                          uniqueTags.add(tag);
+                        });
+                      }
+                    });
+
+                    const uniqueTagsArray = Array.from(uniqueTags);
+                    return uniqueTagsArray as string[];
+                    }
+                  }
+                />
+                <SearchFilter.Select
+                  className={classes.filter}
                   label="Kind"
                   name="kind"
                   values={['Component', 'Template']}

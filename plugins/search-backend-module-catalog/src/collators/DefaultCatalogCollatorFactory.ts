@@ -33,6 +33,7 @@ import { Readable } from 'stream';
 import { CatalogCollatorEntityTransformer } from './CatalogCollatorEntityTransformer';
 import { readCollatorConfigOptions } from './config';
 import { defaultCatalogCollatorEntityTransformer } from './defaultCatalogCollatorEntityTransformer';
+import { log } from 'console';
 
 /** @public */
 export type DefaultCatalogCollatorFactoryOptions = {
@@ -124,6 +125,14 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
     return Readable.from(this.execute());
   }
 
+  private printAllProperties(obj: Record<string, any>) {
+    for (const property in obj) {
+      if (obj.hasOwnProperty(property)) {
+        console.log(property + ": " + obj[property]);
+      }
+    }
+  }
+
   private async *execute(): AsyncGenerator<CatalogEntityDocument> {
     const { token } = await this.tokenManager.getToken();
     let entitiesRetrieved = 0;
@@ -149,6 +158,8 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
       entitiesRetrieved += entities.length;
 
       for (const entity of entities) {
+        log("HannesJetter Catalog:\n", this.printAllProperties(entity));
+
         yield {
           ...this.entityTransformer(entity),
           authorization: {

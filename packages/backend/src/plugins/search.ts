@@ -26,6 +26,8 @@ import {
   LunrSearchEngine,
 } from '@backstage/plugin-search-backend-node';
 import { SearchEngine } from '@backstage/plugin-search-common';
+import { CatalogCollatorEntityTransformer, DefaultCatalogCollatorFactory, defaultCatalogCollatorEntityTransformer } from '@backstage/plugin-catalog-backend';
+import { TechDocsCollatorEntityTransformer, DefaultTechDocsCollatorFactory, defaultTechDocsCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-techdocs';
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -82,13 +84,42 @@ export default async function createPlugin(
     }),
   });
 
+  const myTagEntityTransformer: CatalogCollatorEntityTransformer = (
+    entity: Entity,
+  ) => {
+    return {
+      ...defaultCatalogCollatorEntityTransformer(entity),
+      tags: entity.metadata.tags
+    };
+  };
+
   indexBuilder.addCollator({
     schedule,
     factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
       discovery: env.discovery,
       tokenManager: env.tokenManager,
+      entityTransformer: myTagEntityTransformer,
     }),
   });
+
+  const myTechDocsTagEntityTransformer: TechDocsCollatorEntityTransformer = (
+    entity: Entity,
+  ) => {
+    try {
+      const test = defaultTechDocsCollatorEntityTransformer(entity);
+      return {
+        ...test,
+        tags: entity.metadata.tags
+      };
+    }
+    catch (e) {
+      return {
+        ...defaultTechDocsCollatorEntityTransformer(entity),
+        tags: entity.metadata.tags
+      };
+    }
+    
+  };
 
   indexBuilder.addCollator({
     schedule,
@@ -96,6 +127,7 @@ export default async function createPlugin(
       discovery: env.discovery,
       logger: env.logger,
       tokenManager: env.tokenManager,
+      entityTransformer: myTechDocsTagEntityTransformer,
     }),
   });
 
