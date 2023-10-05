@@ -132,14 +132,6 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     return Readable.from(this.execute());
   }
 
-  private printAllProperties(obj: Record<string, any>) {
-    for (const property in obj) {
-      if (obj.hasOwnProperty(property)) {
-        console.log(property + ": " + obj[property]);
-      }
-    }
-  }
-
   private async *execute(): AsyncGenerator<TechDocsDocument, void, undefined> {
     const limit = pLimit(this.parallelismLimit);
     const techDocsBaseUrl = await this.discovery.getBaseUrl('techdocs');
@@ -160,18 +152,6 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
               'metadata.annotations.backstage.io/techdocs-ref':
                 CATALOG_FILTER_EXISTS,
             },
-            fields: [
-              'kind',
-              'namespace',
-              'metadata.annotations',
-              'metadata.name',
-              'metadata.title',
-              'metadata.namespace',
-              'metadata.tags',
-              'spec.type',
-              'spec.lifecycle',
-              'relations',
-            ],
             limit: batchSize,
             offset: entitiesRetrieved,
           },
@@ -183,11 +163,6 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
       moreEntitiesToGet = entities.length === batchSize;
       entitiesRetrieved += entities.length;
 
-      log("Hello World");
-      // log all entities stringified
-      log(this.entityTransformer(entities[1]));
-
-      
 
       const docPromises = entities
         .filter(it => it.metadata?.annotations?.['backstage.io/techdocs-ref'])
@@ -229,31 +204,9 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
               ]);
 
               log("HannesJetter: Start");
-              //log(this.printAllProperties(entity));
-              //log(this.entityTransformer(entity));
-
-              const test :TechDocsDocument[] = searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
-                ...this.entityTransformer(entity),
-                location: this.applyArgsToFormat(
-                  this.locationTemplate || '/docs/:namespace/:kind/:name/:path',
-                  {
-                    ...entityInfo,
-                    path: doc.location,
-                  },
-                ),
-                path: doc.location,
-                ...entityInfo,
-                entityTitle: entity.metadata.title,
-                componentType: entity.spec?.type?.toString() || 'other',
-                authorization: {
-                  resourceRef: stringifyEntityRef(entity),
-                },
-              }));
-
-              log("HannesJetter:\n" + JSON.stringify(test));
               
               return searchIndex.docs.map((doc: MkSearchIndexDoc) => ({
-                tags: entity.metadata.tags,
+                ...this.entityTransformer(entity),
                 title: unescape(doc.title),
                 text: unescape(doc.text || ''),
                 location: this.applyArgsToFormat(

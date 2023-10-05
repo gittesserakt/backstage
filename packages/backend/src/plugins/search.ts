@@ -16,7 +16,6 @@
 
 import { useHotCleanup } from '@backstage/backend-common';
 import { DefaultAdrCollatorFactory } from '@backstage/plugin-adr-backend';
-import { DefaultCatalogCollatorFactory } from '@backstage/plugin-search-backend-module-catalog';
 import { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
 import { createRouter } from '@backstage/plugin-search-backend';
 import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-module-elasticsearch';
@@ -28,9 +27,9 @@ import {
 import { SearchEngine } from '@backstage/plugin-search-common';
 import { CatalogCollatorEntityTransformer, DefaultCatalogCollatorFactory, defaultCatalogCollatorEntityTransformer } from '@backstage/plugin-catalog-backend';
 import { TechDocsCollatorEntityTransformer, DefaultTechDocsCollatorFactory, defaultTechDocsCollatorEntityTransformer } from '@backstage/plugin-search-backend-module-techdocs';
-import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
+import { Entity } from '@backstage/catalog-model';
 
 async function createSearchEngine(
   env: PluginEnvironment,
@@ -89,7 +88,7 @@ export default async function createPlugin(
   ) => {
     return {
       ...defaultCatalogCollatorEntityTransformer(entity),
-      tags: entity.metadata.tags
+      tags: entity.metadata.tags,
     };
   };
 
@@ -105,20 +104,10 @@ export default async function createPlugin(
   const myTechDocsTagEntityTransformer: TechDocsCollatorEntityTransformer = (
     entity: Entity,
   ) => {
-    try {
-      const test = defaultTechDocsCollatorEntityTransformer(entity);
-      return {
-        ...test,
-        tags: entity.metadata.tags
-      };
-    }
-    catch (e) {
-      return {
-        ...defaultTechDocsCollatorEntityTransformer(entity),
-        tags: entity.metadata.tags
-      };
-    }
-    
+    return {
+      ...defaultTechDocsCollatorEntityTransformer(entity),
+      tags: entity.metadata.tags,
+    };
   };
 
   indexBuilder.addCollator({

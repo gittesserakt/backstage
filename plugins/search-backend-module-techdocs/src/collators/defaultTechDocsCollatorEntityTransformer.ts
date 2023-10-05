@@ -41,15 +41,16 @@ export const defaultTechDocsCollatorEntityTransformer: TechDocsCollatorEntityTra
   (entity: Entity) => {
     console.log("test");
     return {
-      title: entity.metadata.title ?? entity.metadata.name,
-      name: entity.metadata.title ?? entity.metadata.name,
-      path: '',
+      kind: entity.kind,
+      namespace: entity.metadata.namespace || 'default',
+      annotations: entity.metadata.annotations || '',
+      name: entity.metadata.name || '',
+      title: entity.metadata.title || '',
       text: getDocumentText(entity),
       componentType: entity.spec?.type?.toString() || 'other',
       type: entity.spec?.type?.toString() || 'other',
-      namespace: entity.metadata.namespace || 'default',
-      kind: entity.kind,
       lifecycle: (entity.spec?.lifecycle as string) || '',
       owner: (entity.spec?.owner as string) || '',
+      path: '',
     };
   };

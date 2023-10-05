@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren, ReactNode } from 'react';
-import { ListItemIcon, ListItemText, makeStyles } from '@material-ui/core';
+import { Box, Chip, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 import { ResultHighlight } from '@backstage/plugin-search-common';
@@ -109,44 +109,58 @@ export const TechDocsSearchResultListItem = (
     if (!result) return null;
 
     return (
-      <ListItemText
-        className={classes.itemText}
-        primaryTypographyProps={{ variant: 'h6' }}
-        primary={
-          <LinkWrapper>
-            {title ? (
-              title
-            ) : (
-              <>
-                {resultTitle} | {entityTitle ?? resultName} docs
-              </>
-            )}
-          </LinkWrapper>
-        }
-        secondary={
-          <Typography
-            component="span"
-            style={{
-              display: '-webkit-box',
-              WebkitBoxOrient: 'vertical',
-              WebkitLineClamp: lineClamp,
-              overflow: 'hidden',
-            }}
-            color="textSecondary"
-            variant="body2"
-          >
-            {highlight?.fields.text ? (
-              <HighlightedSearchResultText
-                text={highlight.fields.text}
-                preTag={highlight.preTag}
-                postTag={highlight.postTag}
-              />
-            ) : (
-              result.text
-            )}
-          </Typography>
-        }
-      />
+      <div className={classes.flexContainer}>
+        <ListItemText
+          className={classes.itemText}
+          primaryTypographyProps={{ variant: 'h6' }}
+          primary={
+            <LinkWrapper>
+              {title ? (
+                title
+              ) : (
+                <>
+                  {resultTitle} | {entityTitle ?? resultName} docs
+                </>
+              )}
+            </LinkWrapper>
+          }
+          secondary={
+            <Typography
+              component="span"
+              style={{
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: lineClamp,
+                overflow: 'hidden',
+              }}
+              color="textSecondary"
+              variant="body2"
+            >
+              {highlight?.fields.text ? (
+                <HighlightedSearchResultText
+                  text={highlight.fields.text}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
+                />
+              ) : (
+                result.text
+              )}
+            </Typography>
+          }
+        />
+        <Box>
+          {result.kind && <Chip label={`Kind: ${result.kind}`} size="small" />}
+          {result.lifecycle && (
+            <Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />
+          )}
+          {result.owner && (
+            <Chip label={`Owner: ${result.owner}`} size="small" />
+          )}
+          {result.tags && (
+            <Chip label={`Tags: ${result.tags}`} size="small" />
+          )}
+        </Box>
+      </div>
     );
   };
 
