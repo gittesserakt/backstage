@@ -39,7 +39,6 @@ const getDocumentText = (entity: Entity): string => {
 /** @public */
 export const defaultCatalogCollatorEntityTransformer: CatalogCollatorEntityTransformer =
   (entity: Entity) => {
-    console.log("Test");
     return {
       title: entity.metadata.title ?? entity.metadata.name,
       text: getDocumentText(entity),
