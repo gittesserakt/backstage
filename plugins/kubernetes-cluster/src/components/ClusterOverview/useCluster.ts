@@ -13,5 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import useAsync from 'react-use/lib/useAsync';
 
-export * from './translation';
+import { useApi } from '@backstage/core-plugin-api';
+import { kubernetesApiRef } from '@backstage/plugin-kubernetes-react';
+
+/**
+ * Arguments for useApiResources
+ *
+ * @public
+ */
+export interface UseClusterOptions {
+  clusterName: string;
+}
+
+/**
+ * Retrieves the logs for the given pod
+ *
+ * @public
+ */
+export const useCluster = ({ clusterName }: UseClusterOptions) => {
+  const kubernetesApi = useApi(kubernetesApiRef);
+  return useAsync(async () => {
+    return await kubernetesApi.getCluster(clusterName);
+  }, [clusterName]);
+};
