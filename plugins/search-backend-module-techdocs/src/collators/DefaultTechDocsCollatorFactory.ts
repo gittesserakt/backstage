@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,8 @@ import fetch from 'node-fetch';
 import pLimit from 'p-limit';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
-import { log } from 'console';
+import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
+import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
 
 interface MkSearchIndexDoc {
   title: string;
@@ -62,9 +63,6 @@ export type TechDocsCollatorFactoryOptions = {
   catalogClient?: CatalogApi;
   parallelismLimit?: number;
   legacyPathCasing?: boolean;
-  /**
-   * Allows you to customize how entities are shaped into documents.
-   */
   entityTransformer?: TechDocsCollatorEntityTransformer;
 };
 
@@ -105,7 +103,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     this.parallelismLimit = options.parallelismLimit ?? 10;
     this.legacyPathCasing = options.legacyPathCasing ?? false;
     this.tokenManager = options.tokenManager;
-    this.entityTransformer = 
+    this.entityTransformer =
       options.entityTransformer ?? defaultTechDocsCollatorEntityTransformer;
   }
 
